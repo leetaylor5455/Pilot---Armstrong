@@ -1,23 +1,82 @@
 #include "BNO055.h"
+#include <Arduino.h>
 
-
-void BNO055::sensor_loop(){
-  sensors_event_t orientationData , angVelocityData , linearAccelData, magnetometerData, accelerometerData, gravityData;
-  sensor->getEvent(&orientationData, Adafruit_BNO055::VECTOR_EULER);
-  sensor->getEvent(&angVelocityData, Adafruit_BNO055::VECTOR_GYROSCOPE);
-  sensor->getEvent(&linearAccelData, Adafruit_BNO055::VECTOR_LINEARACCEL);
-  sensor->getEvent(&magnetometerData, Adafruit_BNO055::VECTOR_MAGNETOMETER);
-  sensor->getEvent(&accelerometerData, Adafruit_BNO055::VECTOR_ACCELEROMETER);
-  sensor->getEvent(&gravityData, Adafruit_BNO055::VECTOR_GRAVITY);
-
-  printEvent(&orientationData);
-  printEvent(&angVelocityData);
-  printEvent(&linearAccelData);
-  printEvent(&magnetometerData);
-  printEvent(&accelerometerData);
-  printEvent(&gravityData);
+bool BNO055::sensor_setup(){
+  Serial.println("BNO055 setup start");
+  bool sensor_start = sensor->begin();
+  // sensor->setExtCrystalUse(true);
+  if (!sensor_start)
+  {
+    Serial.println("Failed to setup BNO055");
+    return sensor_start;
+  }
+  return sensor_start;
 }
 
+void BNO055::sensor_loop(DataStruct& data){
+ 
+  sensors_event_t  AccelData, GyroData;
+  sensor->getEvent(&AccelData, Adafruit_BNO055::VECTOR_ACCELEROMETER);
+  sensor->getEvent(&GyroData, Adafruit_BNO055::VECTOR_GYROSCOPE);
+  
+  logData(&AccelData, data);
+  logData(&GyroData, data);
+
+  printEvent(&AccelData);
+  printEvent(&GyroData);
+  // sensor->getEvent(&orientationData, Adafruit_BNO055::VECTOR_EULER);
+  // sensor->getEvent(&angVelocityData, Adafruit_BNO055::VECTOR_GYROSCOPE);
+  // sensor->getEvent(&linearAccelData, Adafruit_BNO055::VECTOR_LINEARACCEL);
+  // sensor->getEvent(&magnetometerData, Adafruit_BNO055::VECTOR_MAGNETOMETER);
+  // sensor->getEvent(&accelerometerData, Adafruit_BNO055::VECTOR_ACCELEROMETER);
+  // sensor->getEvent(&gravityData, Adafruit_BNO055::VECTOR_GRAVITY);
+
+  // printEvent(&orientationData);
+  // printEvent(&angVelocityData);
+  // printEvent(&linearAccelData);
+  // printEvent(&magnetometerData);
+  // printEvent(&accelerometerData);
+  // printEvent(&gravityData);
+
+  /////
+  // imu::Vector<3> euler = sensor->getVector(Adafruit_BNO055::VECTOR_EULER);
+
+  /* Display the floating point data */
+  // Serial.print("X: ");
+  // Serial.print(euler.x());
+  // Serial.print(" Y: ");
+  // Serial.print(euler.y());
+  // Serial.print(" Z: ");
+  // Serial.print(euler.z());
+  // Serial.print("\t\t");
+
+  //  uint8_t system, gyro, accel, mag = 0;
+  // sensor->getCalibration(&system, &gyro, &accel, &mag);
+  // Serial.print("CALIBRATION: Sys=");
+  // Serial.print(system, DEC);
+  // Serial.print(" Gyro=");
+  // Serial.print(gyro, DEC);
+  // Serial.print(" Accel=");
+  // Serial.print(accel, DEC);
+  // Serial.print(" Mag=");
+  // Serial.println(mag, DEC);
+
+  // delay(BNO055_SAMPLERATE_DELAY_MS);
+}
+
+void BNO055::logData(sensors_event_t* event, DataStruct& data) {
+  switch (event->type)
+  {
+  case SENSOR_TYPE_ACCELEROMETER:
+    data.accel_vec = sensor->getVector(Adafruit_BNO055::VECTOR_ACCELEROMETER);
+    break;
+  case SENSOR_TYPE_GYROSCOPE:
+    data.gyro_vec = sensor->getVector(Adafruit_BNO055::VECTOR_GYROSCOPE);
+    break;
+  default:
+    break;
+  }
+}
 
 void BNO055::printEvent(sensors_event_t* event) {
   double x = -1000000, y = -1000000 , z = -1000000; //dumb values, easy to spot problem
