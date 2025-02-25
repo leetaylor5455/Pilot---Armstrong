@@ -10,6 +10,7 @@ bool BNO055::sensor_setup(){
     Serial.println("Failed to setup BNO055");
     return sensor_start;
   }
+  delay(10); // IMPORTANT: GIVE BNO SOME TIME TO START
   return sensor_start;
 }
 
@@ -38,30 +39,9 @@ void BNO055::sensor_loop(DataStruct& data){
   // printEvent(&accelerometerData);
   // printEvent(&gravityData);
 
-  /////
-  // imu::Vector<3> euler = sensor->getVector(Adafruit_BNO055::VECTOR_EULER);
 
-  /* Display the floating point data */
-  // Serial.print("X: ");
-  // Serial.print(euler.x());
-  // Serial.print(" Y: ");
-  // Serial.print(euler.y());
-  // Serial.print(" Z: ");
-  // Serial.print(euler.z());
-  // Serial.print("\t\t");
 
-  //  uint8_t system, gyro, accel, mag = 0;
-  // sensor->getCalibration(&system, &gyro, &accel, &mag);
-  // Serial.print("CALIBRATION: Sys=");
-  // Serial.print(system, DEC);
-  // Serial.print(" Gyro=");
-  // Serial.print(gyro, DEC);
-  // Serial.print(" Accel=");
-  // Serial.print(accel, DEC);
-  // Serial.print(" Mag=");
-  // Serial.println(mag, DEC);
-
-  // delay(BNO055_SAMPLERATE_DELAY_MS);
+  delay(BNO055_SAMPLERATE_DELAY_MS); // IMPORTANT; DO NOT POLL AT HIGH FREQUENCY HOWEVER FIND A WAY TO AVOID USING DELAY
 }
 
 void BNO055::logData(sensors_event_t* event, DataStruct& data) {

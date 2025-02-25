@@ -5,7 +5,7 @@
 #include <Adafruit_BNO055.h>
 #include <utility/imumaths.h>
 #include "BNO055.h"
-
+#include "DataStruct.h"
 // #define BNO055_SAMPLERATE_DELAY_MS (100)
 
 // Check I2C device address and correct line below (by default address is 0x29 or 0x28)
@@ -43,8 +43,8 @@ void setup() {
 }
 
 void loop() {
-
-  bno.sensor_loop();
+  DataStruct data;
+  bno.sensor_loop(data);
   // imu::Vector<3> euler = bno.getVector(Adafruit_BNO055::VECTOR_EULER);
 
   // /* Display the floating point data */
